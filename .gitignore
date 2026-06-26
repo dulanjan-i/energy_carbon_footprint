@@ -3,3 +3,20 @@ __pycache__/
 carbonfootprint/
 venv/
 .DS_Store
+
+# Node.js / backend
+/backend/node_modules/
+/backend/.env
+/backend/.env.*
+/backend/npm-debug.log*
+/backend/yarn-debug.log*
+/backend/yarn-error.log*
+/backend/pnpm-debug.log*
+/backend/coverage/
+/backend/dist/
+/backend/build/
+/backend/.cache/
+/backend/.parcel-cache/
+/backend/.turbo/
+/backend/.vite/
+/backend/.eslintcache
