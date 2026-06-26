@@ -12,7 +12,6 @@ MODULES = [
     4067, # Wind Onshore
     4068, # Photovoltaics
     1228, # Other Renewables
-    1224, # Nuclear
     1223, # Brown Coal
     4069, # Hard Coal
     4071, # Natural Gas

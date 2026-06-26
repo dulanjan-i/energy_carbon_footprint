@@ -1,0 +1,27 @@
+{
+  "target": "carbon_intensity(t+1)",
+  "unit": "kgCO2/MWh",
+  "rows": 17343,
+  "train_rows": 13007,
+  "test_rows": 4336,
+  "mae": 8.942449517510651,
+  "rmse": 11.998408411958927,
+  "r2": 0.9919644882236501,
+  "features": [
+    "hour(t+1)",
+    "day_of_week(t+1)",
+    "month(t+1)",
+    "is_weekend(t+1)",
+    "carbon_intensity(t)",
+    "carbon_lag_1",
+    "carbon_lag_24",
+    "carbon_lag_168",
+    "wind_onshore",
+    "wind_offshore",
+    "solar",
+    "hydro",
+    "biomass",
+    "coal",
+    "gas"
+  ]
+}
