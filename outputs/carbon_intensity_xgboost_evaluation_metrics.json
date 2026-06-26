@@ -1,0 +1,11 @@
+{
+  "target": "carbon_intensity(t+1)",
+  "unit": "kgCO2/MWh",
+  "prediction_column": "prediction",
+  "rows": 4336,
+  "start_time": "2025-12-27 15:00:00",
+  "end_time": "2026-06-26 06:00:00",
+  "mae": 8.942449516372772,
+  "rmse": 11.99840844967299,
+  "r2": 0.9919644881731348
+}
