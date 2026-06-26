@@ -5,10 +5,23 @@ from datetime import datetime, timedelta
 
 # Configuration
 # Stripped the '100' frontend prefix to use the raw backend filter IDs
-MODULES = [410]
+MODULES = [
+    4066, # Biomass
+    1226, # Hydropower
+    1225, # Wind Offshore
+    4067, # Wind Onshore
+    4068, # Photovoltaics
+    1228, # Other Renewables
+    1224, # Nuclear
+    1223, # Brown Coal
+    4069, # Hard Coal
+    4071, # Natural Gas
+    4070, # Pumped Storage
+    1227  # Other Conventional
+]
 REGION = "DE"
 RESOLUTION = "hour"
-OUTPUT_PATH = "data/raw/total_consumption_2y.csv"
+OUTPUT_PATH = "data/raw/actual_generation_2y.csv"
 
 INDEX_URL = "https://www.smard.de/app/chart_data/{module_id}/{region}/index_{resolution}.json"
 DATA_URL = "https://www.smard.de/app/chart_data/{module_id}/{region}/{module_id}_{region}_{resolution}_{timestamp}.json"
