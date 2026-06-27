@@ -240,7 +240,7 @@ export default function SmartTips({ formData, postcodeData, onTabSwitch }) {
     return (
       <div style={{
         display: 'flex', flexDirection: 'column', alignItems: 'center',
-        justifyContent: 'center', padding: '4rem 2rem', color: '#627d98',
+        justifyContent: 'center', padding: '4rem 2rem', color: '#7a9ab8',
         textAlign: 'center', gap: '1rem',
       }}>
         <div style={{ fontSize: '3rem' }}>💡</div>
@@ -285,7 +285,7 @@ export default function SmartTips({ formData, postcodeData, onTabSwitch }) {
             <div
               key={tip.id}
               style={{
-                background: '#0b1929',
+                background: '#101f31',
                 border: `1px solid ${pri.border}`,
                 borderLeft: `3px solid ${pri.color}`,
                 borderRadius: '12px',
@@ -301,7 +301,7 @@ export default function SmartTips({ formData, postcodeData, onTabSwitch }) {
               {/* Icon + rank */}
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.3rem', minWidth: '2.5rem' }}>
                 <div style={{ fontSize: '1.6rem', lineHeight: 1 }}>{tip.icon}</div>
-                <div style={{ fontSize: '0.65rem', fontWeight: 700, color: '#627d98' }}>#{i + 1}</div>
+                <div style={{ fontSize: '0.65rem', fontWeight: 700, color: '#7a9ab8' }}>#{i + 1}</div>
               </div>
 
               {/* Body */}
@@ -310,7 +310,7 @@ export default function SmartTips({ formData, postcodeData, onTabSwitch }) {
                   <span style={tag(catColor)}>{tip.category}</span>
                   <span style={tag(pri.color)}>{pri.label}</span>
                 </div>
-                <div style={{ fontSize: '1rem', fontWeight: 700, color: '#f0f4f8', marginBottom: '0.4rem' }}>
+                <div style={{ fontSize: '1rem', fontWeight: 700, color: '#dde8f5', marginBottom: '0.4rem' }}>
                   {tip.title}
                 </div>
                 <p style={{ fontSize: '0.83rem', color: '#9fb3c8', lineHeight: 1.6, margin: 0, marginBottom: '0.9rem' }}>
@@ -348,7 +348,7 @@ export default function SmartTips({ formData, postcodeData, onTabSwitch }) {
         })}
       </div>
 
-      <p style={{ fontSize: '0.75rem', color: '#48647a', textAlign: 'center', margin: 0 }}>
+      <p style={{ fontSize: '0.75rem', color: '#3d5872', textAlign: 'center', margin: 0 }}>
         * Estimates are based on average German household data and EVH district heating CO₂ factors. Actual savings may vary.
       </p>
     </div>
@@ -363,7 +363,7 @@ const summaryCard = (color) => ({
   padding: '1.1rem 1.25rem',
   textAlign: 'center',
 });
-const summaryLabel = { fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#627d98', marginBottom: '0.4rem' };
+const summaryLabel = { fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#7a9ab8', marginBottom: '0.4rem' };
 const summaryValue = (color) => ({ fontSize: '1.6rem', fontWeight: 800, color, lineHeight: 1 });
 const summaryUnit = { fontSize: '0.7rem', color: '#48647a', marginTop: '0.25rem' };
 const tag = (color) => ({

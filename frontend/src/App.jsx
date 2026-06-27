@@ -155,8 +155,9 @@ function App() {
         </form>
 
         <div className="sidebar-footer">
-          <div className="footer-badge">🏆 Hackathon 2026</div>
-          <p>Powered by SMARD + EVH data</p>
+          <span className="data-badge">SMARD</span>
+          <span className="data-badge">EVH</span>
+          <span className="data-badge">Hackathon 2026</span>
         </div>
       </aside>
 
