@@ -3,13 +3,29 @@ import axios from 'axios';
 import Graphs from './components/Graphs';
 import Leaderboard from './components/Leaderboard';
 import ScenarioSimulator from './components/ScenarioSimulator';
+import WaermeCheck from './components/WaermeCheck';
 import './App.css';
+
+// Local dataset to show instant suggestions in the sidebar
+const WAERME_DATA = {
+  "06108": { zone: "connected", district: "City Center", status: "District Heating Available" },
+  "06110": { zone: "connected", district: "Glaucha / South Inner City", status: "District Heating Available" },
+  "06112": { zone: "connected", district: "North Inner City / Paulusviertel", status: "District Heating Available" },
+  "06114": { zone: "connected", district: "Böllberg / Wörmlitz", status: "District Heating Available" },
+  "06116": { zone: "planned", district: "Neustadt", status: "Planned Expansion (by 2027)" },
+  "06118": { zone: "planned", district: "Ammendorf / Radewell", status: "Planned Expansion (by 2029)" },
+  "06120": { zone: "planned", district: "Heide-Nord / Blumenau", status: "Planned Expansion (by 2031)" },
+  "06126": { zone: "planned", district: "Halle-South / Silberhöhe", status: "Planned Expansion (by 2029)" },
+  "06132": { zone: "individual", district: "Lettin / Tornau", status: "Heat Pump Recommended" },
+  "06179": { zone: "individual", district: "Teutschenthal (Suburbs)", status: "Heat Pump Recommended" },
+};
 
 function App() {
   const [formData, setFormData] = useState({
     householdSize: "",
     electricityBill: "",
     annualHeatingBill: "",
+    postcode: "", // <-- New form field
   });
   const [results, setResults] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -27,6 +43,7 @@ function App() {
         householdSize: Number(formData.householdSize) || 1,
         electricityBill: Number(formData.electricityBill) || 0,
         annualHeatingBill: Number(formData.annualHeatingBill) || 0,
+        postcode: formData.postcode,
       };
       const response = await axios.post('http://localhost:5001/api/calculate', payload);
       setResults(response.data);
@@ -38,6 +55,9 @@ function App() {
       setLoading(false);
     }
   };
+
+  // Get matching suggestion details if postcode matches
+  const postcodeData = formData.postcode ? WAERME_DATA[formData.postcode.trim()] : null;
 
   return (
     <div className="dashboard">
@@ -100,6 +120,38 @@ function App() {
             </div>
           </div>
 
+          {/* New Postcode Field */}
+          <div className="field">
+            <label>Postcode (Halle)</label>
+            <div className="input-wrap">
+              <input
+                type="text"
+                name="postcode"
+                value={formData.postcode}
+                onChange={handleInputChange}
+                placeholder="e.g. 06108"
+                maxLength={5}
+                required
+              />
+            </div>
+            
+            {/* Dynamic Suggestion right inside the form */}
+            {postcodeData && (
+              <div style={{
+                marginTop: '0.6rem',
+                padding: '0.65rem 0.8rem',
+                background: postcodeData.zone === 'connected' ? 'rgba(32,201,151,0.08)' : postcodeData.zone === 'planned' ? 'rgba(245,158,11,0.08)' : 'rgba(96,165,250,0.08)',
+                border: `1px solid ${postcodeData.zone === 'connected' ? 'rgba(32,201,151,0.2)' : postcodeData.zone === 'planned' ? 'rgba(245,158,11,0.2)' : 'rgba(96,165,250,0.2)'}`,
+                borderRadius: '8px',
+                fontSize: '0.78rem',
+                color: postcodeData.zone === 'connected' ? '#20c997' : postcodeData.zone === 'planned' ? '#f59e0b' : '#60a5fa',
+                lineHeight: '1.4'
+              }}>
+                <strong>📍 {postcodeData.district}:</strong> {postcodeData.status}
+              </div>
+            )}
+          </div>
+
           <button type="submit" className="calc-btn" disabled={loading}>
             {loading ? 'Calculating…' : 'Calculate Footprint'}
           </button>
@@ -114,56 +166,57 @@ function App() {
       {/* MAIN CONTENT */}
       <main className="main">
 
-        {!results ? (
-          <div className="empty-state">
-            <div className="empty-icon">🌱</div>
-            <h2>Your energy dashboard awaits</h2>
-            <p>Fill in your household profile on the left and hit Calculate to see your personalised carbon &amp; cost breakdown.</p>
-          </div>
-        ) : (
-          <>
-            {/* TOP KPI BAR */}
-            <div className="kpi-bar">
-              <div className="kpi">
-                <span className="kpi-label">Weekly Cost</span>
-                <span className="kpi-value">€{results.weekly_summary?.total_cost_eur || '0'}</span>
-              </div>
-              <div className="kpi-divider" />
-              <div className="kpi">
-                <span className="kpi-label">Weekly Emissions</span>
-                <span className="kpi-value">{results.weekly_summary?.total_carbon_kg || '0'} kg</span>
-              </div>
-              <div className="kpi-divider" />
-              <div className="kpi">
-                <span className="kpi-label">Household Size</span>
-                <span className="kpi-value">{formData.householdSize} people</span>
-              </div>
-              <div className="kpi-divider" />
-              <div className="kpi">
-                <span className="kpi-label">Status</span>
-                <span className="kpi-value kpi-badge">✅ Live</span>
-              </div>
-            </div>
+        {/* TABS (Always visible so they can click District Heating right away) */}
+        <div className="tabs">
+          {['overview', 'simulator', 'heating', 'leaderboard'].map(tab => (
+            <button
+              key={tab}
+              className={`tab ${activeTab === tab ? 'tab-active' : ''}`}
+              onClick={() => setActiveTab(tab)}
+            >
+              {tab === 'overview' && '📊 Overview'}
+              {tab === 'simulator' && '🔮 Shift Simulator'}
+              {tab === 'heating' && '🗺️ District Heating'}
+              {tab === 'leaderboard' && '🏆 Leaderboard'}
+            </button>
+          ))}
+        </div>
 
-            {/* TABS */}
-            <div className="tabs">
-              {['overview', 'simulator', 'leaderboard'].map(tab => (
-                <button
-                  key={tab}
-                  className={`tab ${activeTab === tab ? 'tab-active' : ''}`}
-                  onClick={() => setActiveTab(tab)}
-                >
-                  {tab === 'overview' && '📊 Overview'}
-                  {tab === 'simulator' && '🔮 Shift Simulator'}
-                  {tab === 'leaderboard' && '🏆 Leaderboard'}
-                </button>
-              ))}
-            </div>
+        {/* TAB PANELS */}
+        <div className="panel">
 
-            {/* TAB PANELS */}
-            <div className="panel">
+          {activeTab === 'overview' && (
+            !results ? (
+              <div className="empty-state">
+                <div className="empty-icon">🌱</div>
+                <h2>Your energy dashboard awaits</h2>
+                <p>Fill in your household profile on the left and hit Calculate to see your personalised carbon &amp; cost breakdown.</p>
+              </div>
+            ) : (
+              <>
+                {/* TOP KPI BAR */}
+                <div className="kpi-bar">
+                  <div className="kpi">
+                    <span className="kpi-label">Weekly Cost</span>
+                    <span className="kpi-value">€{results.weekly_summary?.total_cost_eur || '0'}</span>
+                  </div>
+                  <div className="kpi-divider" />
+                  <div className="kpi">
+                    <span className="kpi-label">Weekly Emissions</span>
+                    <span className="kpi-value">{results.weekly_summary?.total_carbon_kg || '0'} kg</span>
+                  </div>
+                  <div className="kpi-divider" />
+                  <div className="kpi">
+                    <span className="kpi-label">Household Size</span>
+                    <span className="kpi-value">{formData.householdSize} people</span>
+                  </div>
+                  <div className="kpi-divider" />
+                  <div className="kpi">
+                    <span className="kpi-label">Status</span>
+                    <span className="kpi-value kpi-badge">✅ Live</span>
+                  </div>
+                </div>
 
-              {activeTab === 'overview' && (
                 <div className="overview-grid">
                   {/* Chart */}
                   <div className="card card-wide">
@@ -208,26 +261,35 @@ function App() {
                     </button>
                   </div>
                 </div>
-              )}
+              </>
+            )
+          )}
 
-              {activeTab === 'simulator' && (
-                <div className="simulator-wrap">
-                  <ScenarioSimulator />
-                </div>
-              )}
-
-              {activeTab === 'leaderboard' && (
-                <div className="leaderboard-wrap">
-                  {results.leaderboard
-                    ? <Leaderboard data={results.leaderboard} />
-                    : <p className="empty-msg">No leaderboard data available.</p>
-                  }
-                </div>
-              )}
-
+          {activeTab === 'simulator' && (
+            <div className="simulator-wrap">
+              <ScenarioSimulator />
             </div>
-          </>
-        )}
+          )}
+
+          {activeTab === 'heating' && (
+            <div className="heating-wrap">
+              <WaermeCheck />
+            </div>
+          )}
+
+          {activeTab === 'leaderboard' && (
+            <div className="leaderboard-wrap">
+              {!results ? (
+                <p className="empty-msg">Please calculate your footprint first to view the leaderboard.</p>
+              ) : results.leaderboard ? (
+                <Leaderboard data={results.leaderboard} />
+              ) : (
+                <p className="empty-msg">No leaderboard data available.</p>
+              )}
+            </div>
+          )}
+
+        </div>
       </main>
     </div>
   );
