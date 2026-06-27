@@ -37,11 +37,12 @@ export default function Graphs({ data }) {
           <YAxis yAxisId="right" orientation="right" tick={{ fontSize: 12, fill: '#64748b' }} />
           <Tooltip 
             contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px rgba(0,0,0,0.1)' }}
+            formatter={(value) => value.toFixed(4)}
           />
           <Legend wrapperStyle={{ paddingTop: '20px' }}/>
           <Line 
             yAxisId="left"
-            type="monotone" 
+            type="linear" 
             name="Grid Price (€/kWh)" 
             dataKey="price_eur_kwh" 
             stroke="#ff4757" 
@@ -50,7 +51,7 @@ export default function Graphs({ data }) {
           />
           <Line 
             yAxisId="right"
-            type="monotone" 
+            type="linear" 
             name="Carbon Intensity (kg/kWh)" 
             dataKey="carbon_kg_kwh" 
             stroke="#2ed573" 

@@ -67,17 +67,8 @@ app.post('/api/calculate', async (req, res) => {
     const hourlyBaselineKwh = weeklyKwh / 168; 
 
     try {
-        // 🛑 BYPASS THE CSV READER FOR NOW
-        // const forecastData = await readForecastData();
-
-        // ✅ USE THIS MOCK GRID DATA TO FORCE THE UI TO RENDER
-        console.log("🟡 [BACKEND] Bypassing CSV, using mock grid data...");
-        const forecastData = [
-            { timestamp: "2026-06-27 08:00:00", price_kwh: 0.35, carbon_kwh: 0.5 },
-            { timestamp: "2026-06-27 14:00:00", price_kwh: -0.02, carbon_kwh: 0.1 }, // Green window
-            { timestamp: "2026-06-27 19:00:00", price_kwh: 0.55, carbon_kwh: 0.9 }, // P10 Peak
-            { timestamp: "2026-06-28 08:00:00", price_kwh: 0.30, carbon_kwh: 0.4 }
-        ];
+        console.log("🟡 [BACKEND] Reading forecast CSVs...");
+        const forecastData = await readForecastData();      
 
         let totalBaselineCost = 0;
         let totalBaselineCarbon = 0;
