@@ -56,20 +56,23 @@ html = f"""<!doctype html>
 
     body {{
       margin: 0;
-      background: var(--bg);
+      background:
+        radial-gradient(circle at top left, #dbeafe 0, transparent 28%),
+        linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
       color: var(--text);
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     }}
 
     main {{
-      max-width: 1080px;
-      margin: 40px auto;
+      max-width: 1180px;
+      margin: 32px auto;
       padding: 0 20px;
     }}
 
     h1 {{
-      margin: 0 0 8px;
-      font-size: 34px;
+      margin: 0 0 10px;
+      font-size: 42px;
+      letter-spacing: -0.04em;
     }}
 
     .subtitle {{
@@ -78,9 +81,42 @@ html = f"""<!doctype html>
       font-size: 16px;
     }}
 
+    .hero {{
+      background: linear-gradient(135deg, #0f172a 0%, #1d4ed8 52%, #16a34a 100%);
+      color: white;
+      border-radius: 26px;
+      padding: 30px;
+      margin-bottom: 22px;
+      box-shadow: 0 20px 45px rgba(15, 23, 42, 0.22);
+    }}
+
+    .hero .subtitle {{
+      color: #dbeafe;
+      margin-bottom: 0;
+      max-width: 760px;
+    }}
+
+    .eyebrow {{
+      margin: 0 0 10px;
+      color: #bfdbfe;
+      font-size: 13px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+    }}
+
+    .section-title {{
+      margin: 24px 0 12px;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }}
+
     .grid {{
       display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
+      grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: 16px;
       margin-bottom: 18px;
     }}
@@ -91,6 +127,10 @@ html = f"""<!doctype html>
       border-radius: 16px;
       padding: 18px;
       box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+    }}
+
+    .input-card {{
+      min-height: 132px;
     }}
 
     label {{
@@ -151,6 +191,42 @@ html = f"""<!doctype html>
       font-size: 13px;
     }}
 
+    .highlight-card {{
+      border: 0;
+      background:
+        linear-gradient(white, white) padding-box,
+        linear-gradient(135deg, var(--blue), var(--green)) border-box;
+      border: 1px solid transparent;
+    }}
+
+    .impact-grid {{
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 12px;
+    }}
+
+    .impact-stat {{
+      background: #f8fafc;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 14px;
+    }}
+
+    .impact-label {{
+      margin: 0 0 8px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }}
+
+    .impact-value {{
+      font-size: 26px;
+      font-weight: 850;
+    }}
+
     table {{
       width: 100%;
       border-collapse: collapse;
@@ -181,6 +257,11 @@ html = f"""<!doctype html>
       font-weight: 700;
     }}
 
+    #recommendationText {{
+      color: var(--muted);
+      line-height: 1.5;
+    }}
+
     .note {{
       color: var(--muted);
       font-size: 13px;
@@ -188,97 +269,109 @@ html = f"""<!doctype html>
       margin-top: 14px;
     }}
 
+    .impact-note {{
+      font-size: 16px;
+    }}
+
     @media (max-width: 820px) {{
-      .grid, .result {{
+      .grid, .result, .impact-grid {{
         grid-template-columns: 1fr;
+      }}
+
+      h1 {{
+        font-size: 32px;
       }}
     }}
   </style>
 </head>
 <body>
   <main>
-    <h1>Flexible Energy Recommendation</h1>
-    <p class="subtitle">
-      Pick a forecast hour, enter annual flexible electricity use, and choose how much you care about cost vs carbon.
-    </p>
+    <section class="hero">
+      <p class="eyebrow">Energy decision support</p>
+      <h1>Find a better hour to use electricity</h1>
+    </section>
 
+    <p class="section-title">1. Household and schedule inputs</p>
     <section class="grid">
-      <div class="card">
-        <label for="annualKwh">Annual flexible electricity</label>
-        <input id="annualKwh" type="number" min="1" step="1" value="{DEFAULT_ANNUAL_KWH}" />
-        <p class="note">
-          Daily flexible energy: <strong id="dailyKwh"></strong> kWh/day
-        </p>
+      <div class="card input-card">
+        <label for="annualConsumption">Annual electricity consumption</label>
+        <input id="annualConsumption" type="number" min="1" step="1" value="3500" />
+        <p class="note">kWh/year</p>
       </div>
 
-      <div class="card">
-        <label for="selectedTime">Pick current time</label>
-        <input id="selectedTime" type="datetime-local" step="3600" />
-        <p class="note">The recommendation searches nearby hours in the forecast.</p>
+      <div class="card input-card">
+        <label for="selectedDate">Pick date</label>
+        <select id="selectedDate"></select>
+        <p class="note">Dates are shown in English.</p>
       </div>
 
-      <div class="card">
-        <label for="timeWindow">Allowed time window</label>
+      <div class="card input-card">
+        <label for="selectedHour">Pick hour</label>
+        <select id="selectedHour"></select>
+        <p class="note">Hour-only selection, no minutes.</p>
+      </div>
+
+      <div class="card input-card">
+        <label for="direction">Flexibility direction</label>
+        <select id="direction">
+          <option value="both" selected>Earlier & later (±)</option>
+          <option value="earlier">Earlier only (-)</option>
+          <option value="later">Later only (+)</option>
+        </select>
+        <p class="note">Reflects what the household can realistically change.</p>
+      </div>
+
+      <div class="card input-card">
+        <label for="timeWindow">Search window</label>
         <select id="timeWindow">
-          <option value="1">±1 hour</option>
-          <option value="2" selected>±2 hours</option>
-          <option value="3">±3 hours</option>
-          <option value="4">±4 hours</option>
-          <option value="6">±6 hours</option>
-          <option value="8">±8 hours</option>
-          <option value="12">±12 hours</option>
+          <option value="1">1 hour</option>
+          <option value="2" selected>2 hours</option>
+          <option value="4">4 hours</option>
+          <option value="6">6 hours</option>
+          <option value="8">8 hours</option>
+          <option value="12">12 hours</option>
         </select>
         <p class="note">Bigger windows give more savings, but require more flexibility.</p>
       </div>
 
-      <div class="card">
+      <div class="card input-card">
         <label for="priority">Priority scale</label>
         <input id="priority" type="range" min="0" max="100" step="1" value="50" />
         <div class="scale-row">
           <span>💰 Cost Priority</span>
-          <strong id="priorityLabel">50%</strong>
           <span>🌱 Carbon Priority</span>
         </div>
       </div>
     </section>
 
+    <p class="section-title">2. Personalized recommendation</p>
     <section class="result">
-      <div class="card">
+      <div class="card highlight-card">
         <span class="pill" id="strategyLabel">Balanced recommendation</span>
         <h2>Recommended Time</h2>
         <div class="big" id="recommendedTime"></div>
         <p id="recommendationText"></p>
-        <p class="note">
-          The slider uses an aggressive nonlinear curve, so moving away from 50% quickly favors either € savings or CO₂ reduction.
-          The highest utility wins.
-        </p>
       </div>
 
-      <div class="card">
+      <div class="card highlight-card">
         <h2>Estimated Annual Impact</h2>
-        <table>
-          <tbody>
-            <tr>
-              <th>Cost change</th>
-              <td id="costChange"></td>
-            </tr>
-            <tr>
-              <th>CO₂ change</th>
-              <td id="carbonChange"></td>
-            </tr>
-            <tr>
-              <th>Current annual cost</th>
-              <td id="currentAnnualCost"></td>
-            </tr>
-            <tr>
-              <th>Recommended annual cost</th>
-              <td id="recommendedAnnualCost"></td>
-            </tr>
-          </tbody>
-        </table>
+        <div class="impact-grid">
+          <div class="impact-stat">
+            <p class="impact-label">Cost change</p>
+            <div class="impact-value" id="costChange"></div>
+          </div>
+          <div class="impact-stat">
+            <p class="impact-label">CO₂ change</p>
+            <div class="impact-value" id="carbonChange"></div>
+          </div>
+        </div>
+        <p class="note impact-note">
+          Estimated using forecast electricity prices and carbon intensity for the selected recommendation.
+        </p>
       </div>
     </section>
 
+    <p class="section-title">3. Forecast comparison</p>
     <section class="card" style="margin-top: 18px;">
       <h2>Selected Hour vs Recommended Hour</h2>
       <table>
@@ -296,7 +389,7 @@ html = f"""<!doctype html>
             <td id="recommendedTimeCell"></td>
           </tr>
           <tr>
-            <td>Price</td>
+            <td>Forecast wholesale price</td>
             <td id="currentPriceCell"></td>
             <td id="recommendedPriceCell"></td>
           </tr>
@@ -312,24 +405,57 @@ html = f"""<!doctype html>
 
   <script>
     const forecast = {json.dumps(forecast_rows)};
-    const selectedTime = document.getElementById("selectedTime");
+    const selectedDate = document.getElementById("selectedDate");
+    const selectedHour = document.getElementById("selectedHour");
+    const direction = document.getElementById("direction");
     const timeWindow = document.getElementById("timeWindow");
-    const annualKwh = document.getElementById("annualKwh");
-    const dailyKwh = document.getElementById("dailyKwh");
+    const annualConsumption = document.getElementById("annualConsumption");
     const priority = document.getElementById("priority");
-    const priorityLabel = document.getElementById("priorityLabel");
-    const sliderAggressiveness = 2.4;
+    const flexibleRatio = 0.50;
+    const retailAdderEurPerKwh = 0.22;
 
     const defaultOption = forecast.findIndex((row) => row.timestamp.endsWith("18:00"));
     const defaultIndex = defaultOption >= 0 ? defaultOption : 0;
-    selectedTime.min = forecast[0].timestamp.replace(" ", "T");
-    selectedTime.max = forecast[forecast.length - 1].timestamp.replace(" ", "T");
-    selectedTime.value = forecast[defaultIndex].timestamp.replace(" ", "T");
+    const availableDates = [...new Set(forecast.map((row) => row.timestamp.slice(0, 10)))];
 
-    function normalize(value, min, max) {{
-      if (max === min) return 0;
-      return (value - min) / (max - min);
+    availableDates.forEach((dateText) => {{
+      const option = document.createElement("option");
+      option.value = dateText;
+      option.textContent = new Date(`${{dateText}}T12:00`).toLocaleDateString("en-US", {{
+        weekday: "long",
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      }});
+      selectedDate.appendChild(option);
+    }});
+
+    selectedDate.value = forecast[defaultIndex].timestamp.slice(0, 10);
+
+    function populateHourOptions() {{
+      const existingHour = selectedHour.value;
+      selectedHour.innerHTML = "";
+      forecast
+        .filter((row) => row.timestamp.startsWith(selectedDate.value))
+        .forEach((row) => {{
+          const hourText = row.timestamp.slice(11, 13);
+          const option = document.createElement("option");
+          option.value = hourText;
+          option.textContent = `${{hourText}}:00`;
+          selectedHour.appendChild(option);
+        }});
+
+      const defaultHour = forecast[defaultIndex].timestamp.slice(11, 13);
+      if ([...selectedHour.options].some((option) => option.value === existingHour)) {{
+        selectedHour.value = existingHour;
+      }} else if ([...selectedHour.options].some((option) => option.value === defaultHour)) {{
+        selectedHour.value = defaultHour;
+      }} else if (selectedHour.options.length > 0) {{
+        selectedHour.selectedIndex = 0;
+      }}
     }}
+
+    populateHourOptions();
 
     function formatEuro(value) {{
       return new Intl.NumberFormat("en-US", {{
@@ -337,6 +463,42 @@ html = f"""<!doctype html>
         currency: "EUR",
         maximumFractionDigits: 0,
       }}).format(value);
+    }}
+
+    function normalize(value, min, max) {{
+      if (max === min) return 0;
+      return (value - min) / (max - min);
+    }}
+
+    function estimatedRetailPriceEurPerKwh(wholesalePriceEurPerMwh) {{
+      return Math.max(0, wholesalePriceEurPerMwh / 1000 + retailAdderEurPerKwh);
+    }}
+
+    function timestampDate(timestamp) {{
+      return timestamp.slice(0, 10);
+    }}
+
+    function timestampHour(timestamp) {{
+      return timestamp.slice(11);
+    }}
+
+    function formatDateShort(dateText) {{
+      return new Date(`${{dateText}}T12:00`).toLocaleDateString("en-US", {{
+        weekday: "short",
+        month: "short",
+        day: "numeric",
+      }});
+    }}
+
+    function formatTimeWithDate(timestamp) {{
+      return `${{formatDateShort(timestampDate(timestamp))}}, ${{timestampHour(timestamp)}}`;
+    }}
+
+    function formatRecommendedTime(currentTimestamp, recommendedTimestamp) {{
+      if (timestampDate(currentTimestamp) === timestampDate(recommendedTimestamp)) {{
+        return timestampHour(recommendedTimestamp);
+      }}
+      return `${{timestampHour(recommendedTimestamp)}} · ${{formatDateShort(timestampDate(recommendedTimestamp))}}`;
     }}
 
     function signedEuro(value) {{
@@ -353,104 +515,106 @@ html = f"""<!doctype html>
       return value >= 0 ? "positive" : "negative";
     }}
 
-    function aggressivePriority(rawPriority) {{
-      if (rawPriority <= 0.5) {{
-        return 0.5 * Math.pow(rawPriority * 2, sliderAggressiveness);
+    function selectedForecastIndex() {{
+      const selectedTimestamp = `${{selectedDate.value}} ${{selectedHour.value}}:00`;
+      const index = forecast.findIndex((row) => row.timestamp === selectedTimestamp);
+      return index >= 0 ? index : 0;
+    }}
+
+    function candidateIndexes(selectedIndex, searchWindowHours, selectedDirection) {{
+      const indexes = [];
+      let startIndex = selectedIndex;
+      let endIndex = selectedIndex;
+
+      if (selectedDirection === "earlier") {{
+        startIndex = Math.max(0, selectedIndex - searchWindowHours);
+      }} else if (selectedDirection === "later") {{
+        endIndex = Math.min(forecast.length - 1, selectedIndex + searchWindowHours);
+      }} else {{
+        startIndex = Math.max(0, selectedIndex - searchWindowHours);
+        endIndex = Math.min(forecast.length - 1, selectedIndex + searchWindowHours);
       }}
-      return 1 - 0.5 * Math.pow((1 - rawPriority) * 2, sliderAggressiveness);
+
+      for (let index = startIndex; index <= endIndex; index += 1) {{
+        indexes.push(index);
+      }}
+      return indexes;
     }}
 
-    function selectedInputToTimestamp() {{
-      return selectedTime.value.replace("T", " ");
-    }}
-
-    function findNearestForecastIndex(timestampText) {{
-      const target = new Date(timestampText.replace(" ", "T")).getTime();
-      let nearestIndex = 0;
-      let nearestDistance = Infinity;
-      forecast.forEach((row, index) => {{
-        const distance = Math.abs(new Date(row.timestamp.replace(" ", "T")).getTime() - target);
-        if (distance < nearestDistance) {{
-          nearestDistance = distance;
-          nearestIndex = index;
-        }}
-      }});
-      return nearestIndex;
+    function directionLabel(selectedDirection) {{
+      if (selectedDirection === "earlier") return "-";
+      if (selectedDirection === "later") return "+";
+      return "±";
     }}
 
     function updateDashboard() {{
-      const selectedIndex = findNearestForecastIndex(selectedInputToTimestamp());
-      selectedTime.value = forecast[selectedIndex].timestamp.replace(" ", "T");
+      const selectedIndex = selectedForecastIndex();
       const current = forecast[selectedIndex];
-      const annualEnergy = Number(annualKwh.value);
-      const dailyEnergy = annualEnergy / 365;
+      const totalAnnualEnergy = Number(annualConsumption.value);
+      const flexibleAnnualEnergy = totalAnnualEnergy * flexibleRatio;
       const searchWindowHours = Number(timeWindow.value);
-      const rawCarbonPriority = Number(priority.value) / 100;
-      const carbonPriority = aggressivePriority(rawCarbonPriority);
+      const carbonPriority = Number(priority.value) / 100;
       const costPriority = 1 - carbonPriority;
-
-      const startIndex = Math.max(0, selectedIndex - searchWindowHours);
-      const endIndex = Math.min(forecast.length - 1, selectedIndex + searchWindowHours);
-      const candidates = forecast.slice(startIndex, endIndex + 1);
+      const selectedDirection = direction.value;
+      const candidates = candidateIndexes(
+        selectedIndex,
+        searchWindowHours,
+        selectedDirection
+      ).map((index) => forecast[index]);
 
       const candidatesWithImpact = candidates.map((candidate) => {{
-        const currentCost = annualEnergy * Math.max(current.price, 0) / 1000;
-        const candidateCost = annualEnergy * Math.max(candidate.price, 0) / 1000;
+        const currentCost =
+          flexibleAnnualEnergy * estimatedRetailPriceEurPerKwh(current.price);
+        const candidateCost =
+          flexibleAnnualEnergy * estimatedRetailPriceEurPerKwh(candidate.price);
         const costSaving = currentCost - candidateCost;
-        const currentCarbon = annualEnergy * current.carbon / 1000 / 1000;
-        const candidateCarbon = annualEnergy * candidate.carbon / 1000 / 1000;
-        const carbonReduction = currentCarbon - candidateCarbon;
+        const currentCarbonKg = flexibleAnnualEnergy * current.carbon / 1000;
+        const candidateCarbonKg = flexibleAnnualEnergy * candidate.carbon / 1000;
+        const carbonReductionKg = currentCarbonKg - candidateCarbonKg;
         return {{
           ...candidate,
           costSaving,
-          carbonReduction,
+          carbonReductionKg,
         }};
       }});
 
-      const candidateCostSavings = candidatesWithImpact.map((candidate) => candidate.costSaving);
-      const carbonReductions = candidatesWithImpact.map((candidate) => candidate.carbonReduction);
-      const minCostSaving = Math.min(...candidateCostSavings);
-      const maxCostSaving = Math.max(...candidateCostSavings);
-      const minCarbonReduction = Math.min(...carbonReductions);
-      const maxCarbonReduction = Math.max(...carbonReductions);
+      const candidatePrices = candidatesWithImpact.map((candidate) => candidate.price);
+      const candidateCarbons = candidatesWithImpact.map((candidate) => candidate.carbon);
+      const minPriceWindow = Math.min(...candidatePrices);
+      const maxPriceWindow = Math.max(...candidatePrices);
+      const minCarbonWindow = Math.min(...candidateCarbons);
+      const maxCarbonWindow = Math.max(...candidateCarbons);
 
       let best = candidatesWithImpact[0];
       let bestUtility = -Infinity;
       candidatesWithImpact.forEach((candidate) => {{
-        const costUtility = normalize(candidate.costSaving, minCostSaving, maxCostSaving);
-        const carbonUtility = normalize(
-          candidate.carbonReduction,
-          minCarbonReduction,
-          maxCarbonReduction
-        );
-        const utility = costPriority * costUtility + carbonPriority * carbonUtility;
+        const priceNorm = normalize(candidate.price, minPriceWindow, maxPriceWindow);
+        const carbonNorm = normalize(candidate.carbon, minCarbonWindow, maxCarbonWindow);
+        const utility =
+          costPriority * (1 - priceNorm)
+          + carbonPriority * (1 - carbonNorm);
         if (utility > bestUtility) {{
           bestUtility = utility;
           best = candidate;
         }}
       }});
 
-      const currentAnnualCost = annualEnergy * Math.max(current.price, 0) / 1000;
-      const recommendedAnnualCost = annualEnergy * Math.max(best.price, 0) / 1000;
       const costSavings = best.costSaving;
 
-      const currentAnnualCarbonTonnes = annualEnergy * current.carbon / 1000 / 1000;
-      const recommendedAnnualCarbonTonnes = annualEnergy * best.carbon / 1000 / 1000;
-      const carbonReductionTonnes = best.carbonReduction;
+      const carbonReductionTonnes = best.carbonReductionKg / 1000;
 
       let strategy = "Balanced recommendation";
       if (carbonPriority === 0) strategy = "Cost-only recommendation";
       if (carbonPriority === 1) strategy = "Carbon-only recommendation";
 
-      dailyKwh.textContent = dailyEnergy.toFixed(2);
-      priorityLabel.textContent =
-        `${{priority.value}}% slider → ${{Math.round(carbonPriority * 100)}}% effective carbon`;
       document.getElementById("strategyLabel").textContent = strategy;
-      document.getElementById("recommendedTime").textContent = best.timestamp.slice(11);
+      document.getElementById("recommendedTime").textContent =
+        formatRecommendedTime(current.timestamp, best.timestamp);
       document.getElementById("recommendationText").textContent =
-        `Move from ${{current.timestamp}} to ${{best.timestamp}} within a ±${{searchWindowHours}} hour window. ` +
-        `This choice balances ${{Math.round(costPriority * 100)}}% cost savings and ` +
-        `${{Math.round(carbonPriority * 100)}}% carbon reduction.`;
+        `Move flexible electricity use from ${{formatTimeWithDate(current.timestamp)}} ` +
+        `to ${{formatTimeWithDate(best.timestamp)}}. ` +
+        `Search rule: ${{directionLabel(selectedDirection)}}${{searchWindowHours}} hours. ` +
+        `This recommendation best matches your cost and carbon preference.`;
 
       const costChange = document.getElementById("costChange");
       costChange.textContent = signedEuro(costSavings);
@@ -460,20 +624,22 @@ html = f"""<!doctype html>
       carbonChange.textContent = signedCarbon(carbonReductionTonnes);
       carbonChange.className = cssClassForSavings(carbonReductionTonnes);
 
-      document.getElementById("currentAnnualCost").textContent = formatEuro(currentAnnualCost);
-      document.getElementById("recommendedAnnualCost").textContent = formatEuro(recommendedAnnualCost);
-
-      document.getElementById("currentTimeCell").textContent = current.timestamp;
-      document.getElementById("recommendedTimeCell").textContent = best.timestamp;
+      document.getElementById("currentTimeCell").textContent = formatTimeWithDate(current.timestamp);
+      document.getElementById("recommendedTimeCell").textContent = formatTimeWithDate(best.timestamp);
       document.getElementById("currentPriceCell").textContent = `${{current.price.toFixed(2)}} €/MWh`;
       document.getElementById("recommendedPriceCell").textContent = `${{best.price.toFixed(2)}} €/MWh`;
       document.getElementById("currentCarbonCell").textContent = `${{current.carbon.toFixed(2)}} kgCO₂/MWh`;
       document.getElementById("recommendedCarbonCell").textContent = `${{best.carbon.toFixed(2)}} kgCO₂/MWh`;
     }}
 
-    selectedTime.addEventListener("change", updateDashboard);
+    selectedDate.addEventListener("change", () => {{
+      populateHourOptions();
+      updateDashboard();
+    }});
+    selectedHour.addEventListener("change", updateDashboard);
+    direction.addEventListener("change", updateDashboard);
     timeWindow.addEventListener("change", updateDashboard);
-    annualKwh.addEventListener("input", updateDashboard);
+    annualConsumption.addEventListener("input", updateDashboard);
     priority.addEventListener("input", updateDashboard);
     updateDashboard();
   </script>
