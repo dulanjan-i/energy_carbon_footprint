@@ -98,12 +98,12 @@ app.post('/api/calculate', async (req, res) => {
         const userScore = Math.round(1800 - (totalBaselineCarbon * 2));
 
         const mockLeaderboard = [
-            { id: 'u1', name: "An", points: 1714, avatar: "👩🏻‍💻" },
-            { id: 'u2', name: "Nikki", points: 1451, avatar: "👩🏻" },
-            { id: 'u3', name: "Sophie", points: 1359, avatar: "👩🏼‍🏫" },
-            { id: 'u4', name: "Dula (You)", points: userScore, avatar: "😎", isUser: true },
-            { id: 'u5', name: "Felix", points: 1057, avatar: "👨🏻‍🦱" },
-            { id: 'u6', name: "Lena", points: 812, avatar: "👧🏽" }
+        { id: 'u1', name: "An",         points: 1820, avatar: "👩🏻‍💻" },
+        { id: 'u2', name: "Nikki",      points: 1650, avatar: "👩🏻" },
+        { id: 'u3', name: "Sophie",     points: 1480, avatar: "👩🏼‍🏫" },
+        { id: 'u4', name: "Dula (You)", points: userScore, avatar: "😎", isUser: true },
+        { id: 'u5', name: "Felix",      points: 1200, avatar: "👨🏻‍🦱" },
+        { id: 'u6', name: "Lena",       points: 900,  avatar: "👧🏽" },
         ];
 
         const sortedLeaderboard = mockLeaderboard.sort((a, b) => b.points - a.points);
