@@ -4,9 +4,9 @@ import Graphs from './components/Graphs';
 import Leaderboard from './components/Leaderboard';
 import ScenarioSimulator from './components/ScenarioSimulator';
 import WaermeCheck from './components/WaermeCheck';
+import SmartTips from './components/SmartTips'; // ← NEW
 import './App.css';
 
-// Local dataset to show instant suggestions in the sidebar
 const WAERME_DATA = {
   "06108": { zone: "connected", district: "City Center", status: "District Heating Available" },
   "06110": { zone: "connected", district: "Glaucha / South Inner City", status: "District Heating Available" },
@@ -25,7 +25,7 @@ function App() {
     householdSize: "",
     electricityBill: "",
     annualHeatingBill: "",
-    postcode: "", // <-- New form field
+    postcode: "",
   });
   const [results, setResults] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -56,7 +56,6 @@ function App() {
     }
   };
 
-  // Get matching suggestion details if postcode matches
   const postcodeData = formData.postcode ? WAERME_DATA[formData.postcode.trim()] : null;
 
   return (
@@ -120,7 +119,7 @@ function App() {
             </div>
           </div>
 
-          {/* New Postcode Field */}
+          {/* Postcode Field with instant suggestion */}
           <div className="field">
             <label>Postcode (Halle)</label>
             <div className="input-wrap">
@@ -134,8 +133,6 @@ function App() {
                 required
               />
             </div>
-            
-            {/* Dynamic Suggestion right inside the form */}
             {postcodeData && (
               <div style={{
                 marginTop: '0.6rem',
@@ -166,17 +163,18 @@ function App() {
       {/* MAIN CONTENT */}
       <main className="main">
 
-        {/* TABS (Always visible so they can click District Heating right away) */}
+        {/* TABS — always visible */}
         <div className="tabs">
-          {['overview', 'simulator', 'heating', 'leaderboard'].map(tab => (
+          {['overview', 'simulator', 'heating', 'tips', 'leaderboard'].map(tab => ( // ← NEW 'tips'
             <button
               key={tab}
               className={`tab ${activeTab === tab ? 'tab-active' : ''}`}
               onClick={() => setActiveTab(tab)}
             >
-              {tab === 'overview' && '📊 Overview'}
-              {tab === 'simulator' && '🔮 Shift Simulator'}
-              {tab === 'heating' && '🗺️ District Heating'}
+              {tab === 'overview'    && '📊 Overview'}
+              {tab === 'simulator'   && '🔮 Shift Simulator'}
+              {tab === 'heating'     && '🗺️ District Heating'}
+              {tab === 'tips'        && '💡 Smart Tips'}  {/* ← NEW */}
               {tab === 'leaderboard' && '🏆 Leaderboard'}
             </button>
           ))}
@@ -194,7 +192,6 @@ function App() {
               </div>
             ) : (
               <>
-                {/* TOP KPI BAR */}
                 <div className="kpi-bar">
                   <div className="kpi">
                     <span className="kpi-label">Weekly Cost</span>
@@ -218,7 +215,6 @@ function App() {
                 </div>
 
                 <div className="overview-grid">
-                  {/* Chart */}
                   <div className="card card-wide">
                     <div className="card-header">
                       <span className="card-title">The EVH Smart Shift — Next 7 Days</span>
@@ -227,7 +223,6 @@ function App() {
                     {results.chart_data && <Graphs data={results.chart_data} />}
                   </div>
 
-                  {/* Smart shift tips */}
                   {results.smart_shift_tips && (
                     <>
                       <div className="card card-alert">
@@ -238,7 +233,6 @@ function App() {
                         </div>
                         <div className="alert-sub">High cost &amp; carbon window</div>
                       </div>
-
                       <div className="card card-green">
                         <div className="alert-icon">🌱</div>
                         <div className="alert-label">Green Window — Shift Here</div>
@@ -250,7 +244,6 @@ function App() {
                     </>
                   )}
 
-                  {/* Action card */}
                   <div className="card card-action">
                     <div className="card-header">
                       <span className="card-title">⚡ Smart Shift Challenge</span>
@@ -274,6 +267,17 @@ function App() {
           {activeTab === 'heating' && (
             <div className="heating-wrap">
               <WaermeCheck />
+            </div>
+          )}
+
+          {/* ← NEW TIPS TAB PANEL */}
+          {activeTab === 'tips' && (
+            <div className="tips-wrap">
+              <SmartTips
+                formData={formData}
+                postcodeData={postcodeData}
+                onTabSwitch={setActiveTab}
+              />
             </div>
           )}
 
