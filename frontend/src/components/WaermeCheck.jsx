@@ -38,7 +38,7 @@ const DID_YOU_KNOW = [
   { stat: "Zero-CO₂", icon: "🌱", desc: "EVH's goal is to transition the entire heating network to 100% renewable energy by 2040." },
 ];
 
-export default function WaermeCheck({ postcode, onPostcodeChange }) {
+export default function WaermeCheck({ postcode, onPostcodeChange, annualHeatingBill }) {
   const [result, setResult] = useState(null);
   const [notFound, setNotFound] = useState(false);
 
@@ -191,16 +191,17 @@ export default function WaermeCheck({ postcode, onPostcodeChange }) {
               </div>
 
               {result.zone !== 'individual' && (
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '0.75rem' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '0.75rem' }}>
                   {[
                     { label: 'Current (Gas)',      value: result.currentEmissionsKg.toLocaleString(), unit: 'kgCO2/yr', color: '#DC2626' },
                     { label: 'With District Heat', value: result.fernwaermeEmissionsKg.toLocaleString(), unit: 'kgCO2/yr', color: '#16A34A' },
-                    { label: 'Savings',            value: `-${result.savingsPercent}%`, unit: 'CO₂ reduction', color: '#16A34A' },
+                    { label: 'CO₂ Savings',        value: `-${result.savingsPercent}%`, unit: 'reduction', color: '#16A34A' },
+                    { label: 'Cost Savings',       value: `€${Math.round(annualHeatingBill * 0.15).toLocaleString()}`, unit: 'per year', color: '#1B4FBB' },
                   ].map(s => (
-                    <div key={s.label} style={{ background: 'rgba(255,255,255,0.7)', border: '1px solid rgba(255,255,255,0.9)', borderRadius: '10px', padding: '0.9rem', textAlign: 'center' }}>
-                      <div style={{ fontSize: '0.75rem', color: '#475569', marginBottom: '0.35rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em' }}>{s.label}</div>
-                      <div style={{ fontSize: '1.3rem', fontWeight: 800, color: s.color, letterSpacing: '-0.02em' }}>{s.value}</div>
-                      <div style={{ fontSize: '0.82rem', color: '#1E293B', marginTop: '0.2rem' }}>{s.unit}</div>
+                    <div key={s.label} style={{ background: 'rgba(255,255,255,0.7)', border: '1px solid rgba(255,255,255,0.9)', borderRadius: '10px', padding: '0.9rem 0.6rem', textAlign: 'center' }}>
+                      <div style={{ fontSize: '0.7rem', color: '#475569', marginBottom: '0.35rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em' }}>{s.label}</div>
+                      <div style={{ fontSize: '1.15rem', fontWeight: 800, color: s.color, letterSpacing: '-0.02em' }}>{s.value}</div>
+                      <div style={{ fontSize: '0.78rem', color: '#1E293B', marginTop: '0.2rem' }}>{s.unit}</div>
                     </div>
                   ))}
                 </div>
@@ -214,19 +215,23 @@ export default function WaermeCheck({ postcode, onPostcodeChange }) {
 
               <p style={{ fontSize: '0.85rem', color: '#1E293B', lineHeight: 1.7, margin: 0 }}>{result.tip}</p>
 
-              <button
+              <a
+                href="https://evh.de/produkte-und-kundenservice/waerme/digitale-helfer/waermeatlas"
+                target="_blank"
+                rel="noopener noreferrer"
                 style={{
                   padding: '0.75rem', background: zone.color === '#D97706' ? '#B45309' : zone.color,
                   border: 'none', borderRadius: '9px', color: '#FFFFFF',
                   fontFamily: 'Inter, sans-serif', fontWeight: 700, fontSize: '0.85rem',
                   cursor: 'pointer', width: '100%', transition: 'opacity 0.15s',
-                  boxShadow: '0 2px 8px rgba(15,23,42,0.12)', marginTop: 'auto'
+                  boxShadow: '0 2px 8px rgba(15,23,42,0.12)', marginTop: 'auto',
+                  textDecoration: 'none', textAlign: 'center', display: 'block', boxSizing: 'border-box'
                 }}
                 onMouseEnter={e => e.currentTarget.style.opacity = '0.88'}
                 onMouseLeave={e => e.currentTarget.style.opacity = '1'}
               >
                 {zone.cta}
-              </button>
+              </a>
             </div>
           ) : (
             /* Placeholder result card if no postcode matches yet */

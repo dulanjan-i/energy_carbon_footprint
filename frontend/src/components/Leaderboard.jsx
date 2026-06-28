@@ -27,12 +27,12 @@ export default function Leaderboard({ formData, postcodeData, challengeAccepted 
       heatingEmissions = baseHeating * 0.55; // 45% savings
     }
 
-    const challengeBonus = challengeAccepted ? 150 : 0;
-    const electricityEmissions = Math.max(0, baseElectricity - (electricityBill * 12 * 0.18 + challengeBonus));
+    const challengeBonus = challengeAccepted ? 400 : 0;
+    const electricityEmissions = Math.max(0, baseElectricity - (electricityBill * 12 * 0.18));
     
     const behaviourReduction = householdSize >= 4 ? 650 : householdSize >= 2 ? 380 : 100;
     
-    const userEmissions = Math.round(Math.max(100, heatingEmissions + electricityEmissions - behaviourReduction));
+    const userEmissions = Math.round(Math.max(100, heatingEmissions + electricityEmissions - behaviourReduction - challengeBonus));
     const userSavings = Math.round(Math.max(0, baseEmissions - userEmissions));
     const userPct = Math.round((userSavings / baseEmissions) * 100);
 
@@ -56,7 +56,7 @@ export default function Leaderboard({ formData, postcodeData, challengeAccepted 
         emissions: Math.round(standardBase * 0.42), // 58% efficiency
         savings: Math.round(standardBase * 0.58),
         pct: 58,
-        avatar: "👩🏻"
+        avatar: "👩🏻💼"
       },
       {
         id: 'u3',
@@ -72,7 +72,7 @@ export default function Leaderboard({ formData, postcodeData, challengeAccepted 
         emissions: userEmissions,
         savings: userSavings,
         pct: userPct,
-        avatar: "😎",
+        avatar: "😎💻",
         isUser: true
       },
       {
