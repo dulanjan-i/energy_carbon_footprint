@@ -55,5 +55,5 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           config-file: .github/release-please-config.json
-          release-type: simple
+          manifest-file: .github/release-please-manifest.json
           target-branch: main
