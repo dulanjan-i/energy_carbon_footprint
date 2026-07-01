@@ -20,3 +20,6 @@ venv/
 /backend/.turbo/
 /backend/.vite/
 /backend/.eslintcache
+
+# Local tools
+actionlint
