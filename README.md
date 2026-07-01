@@ -10,6 +10,16 @@ Full authorship of this application is reserved for:
 - Tien An Su
 - Yi Ting Yang
 
+## Release Process
+
+This repository uses a single semantic version stored in the root [VERSION](VERSION) file.
+
+- `VERSION` is the canonical source of truth.
+- [CHANGELOG.md](CHANGELOG.md) is maintained by GitHub Release Please.
+- Conventional commits drive release note generation.
+- Pull requests validate that the canonical version is a valid semantic version and that package manifests do not introduce competing version fields.
+- Merges to `main` trigger Release Please to open or update a release PR and create the release tag when the release PR is merged.
+
 The project has two connected layers:
 
 1. A Python pipeline that downloads raw SMARD data, computes carbon intensity, builds model datasets, trains XGBoost models, evaluates them, and generates one-week forecasts.

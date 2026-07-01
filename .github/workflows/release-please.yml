@@ -1,0 +1,59 @@
+name: Release Please
+
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+
+jobs:
+  version-check:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Validate canonical version
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          if [[ ! -f VERSION ]]; then
+            echo "VERSION file is missing."
+            exit 1
+          fi
+
+          version="$(tr -d '[:space:]' < VERSION)"
+
+          if [[ ! "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+([.-][0-9A-Za-z-]+)?$ ]]; then
+            echo "VERSION must follow semantic versioning, got: $version"
+            exit 1
+          fi
+
+          if grep -RIn '"version"' frontend/package.json backend/package.json package.json 2>/dev/null; then
+            echo "VERSION is canonical. Remove package.json version fields to avoid drift."
+            exit 1
+          fi
+
+          echo "Canonical version: $version"
+
+  release-please:
+    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run Release Please
+        uses: googleapis/release-please-action@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          config-file: .github/release-please-config.json
+          release-type: simple
+          target-branch: main
