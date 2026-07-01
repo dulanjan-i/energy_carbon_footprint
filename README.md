@@ -20,6 +20,18 @@ This repository uses a single semantic version stored in the root [VERSION](VERS
 - Pull requests validate that the canonical version is a valid semantic version and that package manifests do not introduce competing version fields.
 - Merges to `main` trigger Release Please to open or update a release PR and create the release tag when the release PR is merged.
 
+## CI CD Workflow
+
+The main GitHub Actions pipeline is in [`.github/workflows/ci-cd.yml`](.github/workflows/ci-cd.yml) and mirrors the GitLab-style stage flow you asked about:
+
+- `check-version`
+- `stage-build`
+- `stage-deploy`
+- `build`
+- `deploy`
+
+The pipeline runs frontend and backend checks separately, produces a frontend build artifact, and includes a backend smoke test. The deploy job is intentionally isolated so you can plug in a real host or environment secret later without changing the earlier validation stages.
+
 The project has two connected layers:
 
 1. A Python pipeline that downloads raw SMARD data, computes carbon intensity, builds model datasets, trains XGBoost models, evaluates them, and generates one-week forecasts.
