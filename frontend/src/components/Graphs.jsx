@@ -5,9 +5,8 @@ import {
 } from 'recharts';
 
 export default function Graphs({ data }) {
-  if (!data || data.length === 0) return null;
-
   const formattedData = useMemo(() => {
+    if (!data) return [];
     return data.map(point => {
       const date = new Date(point.timestamp);
       return {
@@ -20,6 +19,8 @@ export default function Graphs({ data }) {
       };
     });
   }, [data]);
+
+  if (!data || data.length === 0) return null;
 
   const CustomTooltip = ({ active, payload, label }) => {
     if (!active || !payload || !payload.length) return null;
